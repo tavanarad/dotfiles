@@ -22,6 +22,7 @@ Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
 " Vim-Airline plugin
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
+Plugin 'enricobacis/vim-airline-clock'
 
 " CtrlP Plugin
 Plugin 'ctrlpvim/ctrlp.vim'
@@ -66,6 +67,9 @@ Plugin 'devjoe/vim-codequery'
 
 "VimEnhancedResolver
 Plugin 'davidosomething/vim-enhanced-resolver', { 'do': 'npm install --global enhanced-resolve-cli' }
+
+" CtrlSF
+Plugin 'dyng/ctrlsf.vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -205,3 +209,6 @@ set undodir=~/.vim/undo//
 set backupdir=~/.vim/backup//
 set directory=~/.vim/swap//
 
+" Enable tab menu for e command
+set wildmenu
+set wildmode=full
