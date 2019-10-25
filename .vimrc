@@ -1,3 +1,4 @@
+set nomodeline                " Security
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
@@ -22,7 +23,6 @@ Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
 " Vim-Airline plugin
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
-Plugin 'enricobacis/vim-airline-clock'
 
 " CtrlP Plugin
 Plugin 'ctrlpvim/ctrlp.vim'
@@ -71,12 +71,32 @@ Plugin 'davidosomething/vim-enhanced-resolver', { 'do': 'npm install --global en
 " CtrlSF
 Plugin 'dyng/ctrlsf.vim'
 
+" GitGutter
+Plugin 'airblade/vim-gitgutter'
+
+" TabNine
+Plugin 'zxqfl/tabnine-vim'
+
+" Dart highlighter
+Plugin 'dart-lang/dart-vim-plugin'
+
+" " LanguageClient
+" Plugin 'autozimu/LanguageClient-neovim', {
+"     \ 'branch': 'next',
+"     \ 'do': 'bash install.sh',
+"     \ }
+
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
+
+inoremap kj <ESC>
+cnoremap kj <C-C>
 
 " Folding 
 filetype plugin indent on
 set foldmethod=indent
+nnoremap <space> za 
+nnoremap <S-space> zM 
 syntax on
 
 " Show linenumbers
@@ -147,6 +167,7 @@ let g:NERDToggleCheckAllLines = 1
 " CtrlP config
 let g:ctrlp_max_files=0
 let g:ctrlp_custom_ignore='\v[\/](.git|hg|svn|node_modules|dist)$'
+nnoremap <C-b> :CtrlPBuffer <CR>
 
 " Show current line 
 :se cursorline
@@ -160,6 +181,7 @@ let g:ale_sign_error = '●' " Less aggressive than the default '>>'
 let g:ale_sign_warning = '.'
 let g:ale_lint_on_enter = 1 " Less distracting when opening a new file
 let g:ale_fix_on_save = 1
+let g:ale_fixers = { 'javascript': ['eslint'] }
 
 " YouCompleteMe config
 " Start autocompletion after 4 chars
@@ -203,6 +225,7 @@ nnoremap <silent> <2-LeftMouse> :let @/='\V\<'.escape(expand('<cword>'), '\').'\
 
 " VimEnhancedResolver config
 autocmd FileType javascript nmap <buffer> gf <Plug>(enhanced-resolver-go-cursor)
+autocmd FileType javascript.jsx nmap <buffer> gf <Plug>(enhanced-resolver-go-cursor)
 
 " Set swap, undo and backup directories
 set undodir=~/.vim/undo//
@@ -212,3 +235,17 @@ set directory=~/.vim/swap//
 " Enable tab menu for e command
 set wildmenu
 set wildmode=full
+
+" " Required for operations modifying multiple buffers like rename.
+" set hidden
+"
+" let g:LanguageClient_serverCommands = {
+"     \ 'javascript': ['/Users/morteza/Projects/javascript-typescript-langserver/lib/language-server.js'],
+"     \ 'javascript.jsx': ['js-langserver', '--stdio'],
+"     \ }
+
+" nnoremap <F5> :call LanguageClient_contextMenu()<CR>
+" " Or map each action separately
+" nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
+" nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+" nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
