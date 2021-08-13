@@ -1,0 +1,35 @@
+{
+ "coc.preferences.formatOnSaveFiletypes": [
+    "dart",
+    "javascript",
+    "javascript.jsx",
+    "css",
+    "markdown"
+  ],
+  "cSpell.enabledLanguageIds": [
+    "dart",
+    "csharp",
+    "go",
+    "javascript",
+    "javascriptreact",
+    "markdown",
+    "php",
+    "plaintext",
+    "typescript",
+    "typescriptreact",
+    "yml"
+  ],
+  "cSpell.userWords": [
+    "Cheeta",
+    "Draggable",
+    "Jalali",
+    "Scrollable",
+    "Usecase",
+    "cheetagps",
+    "geofence",
+    "mockito",
+    "usecases"
+  ],
+  "flutter.provider.enableSnippet": true,
+  "flutter.lsp.initialization.closingLabels": true
+}

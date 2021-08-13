@@ -1,4 +1,3 @@
-set nomodeline                " Security
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
@@ -51,10 +50,7 @@ Plugin 'mxw/vim-jsx'
 Plugin 'w0rp/ale'
 
 " YouCompleteMe Plugin
-" Plugin 'Valloric/YouCompleteMe', { 'do': './install.py --all --clangd-completer' }
-
-" Coc.nvim
-Plugin 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
+" Plugin 'Valloric/YouCompleteMe', { 'do': './install.py --tern-completer' }
 
 " VimLexical Plugin
 Plugin 'reedes/vim-lexical'
@@ -65,54 +61,42 @@ Plugin 'dpelle/vim-LanguageTool'
 " VimCheatSheet Plugin
 Plugin 'lifepillar/vim-cheat40'
 
-"VimCodeQuery
-Plugin 'devjoe/vim-codequery'
-
 "VimEnhancedResolver
 Plugin 'davidosomething/vim-enhanced-resolver', { 'do': 'npm install --global enhanced-resolve-cli' }
 
-" CtrlSF
-Plugin 'dyng/ctrlsf.vim'
+" ACK vim
+Plugin 'mileszs/ack.vim'
+
+" Sleuth
+Plugin 'tpope/vim-sleuth'
+
+" Dart
+Plugin 'dart-lang/dart-vim-plugin'
+" Plugin 'natebosch/vim-lsc-dart'
+" Plugin 'natebosch/vim-lsc'
+
+" Coc.nvim
+Plugin 'neoclide/coc.nvim'
 
 " GitGutter
 Plugin 'airblade/vim-gitgutter'
 
-" TabNine
-Plugin 'zxqfl/tabnine-vim'
-
-" Dart highlighter
-Plugin 'dart-lang/dart-vim-plugin'
-
-" " Vim-LSC language server client
-" Plugin 'natebosch/vim-lsc'
-" Plugin 'natebosch/vim-lsc-dart'
-
-" " LanguageClient
-" Plugin 'autozimu/LanguageClient-neovim', {
-"     \ 'branch': 'next',
-"     \ 'do': 'bash install.sh',
-"     \ }
-
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 
-inoremap kj <ESC>
-cnoremap kj <C-C>
-
-" Folding 
+" Folding
 filetype plugin indent on
 set foldmethod=indent
-nnoremap <space> za 
-nnoremap <S-space> zM 
 syntax on
+set tags=tags
 
 " Show linenumbers
 set number
 set ruler
 
 " Set Proper Tabs
-set tabstop=4
-set shiftwidth=4
+set tabstop=2
+set shiftwidth=2
 set smarttab
 set expandtab
 
@@ -144,6 +128,10 @@ autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 map <C-n> :NERDTreeToggle<CR>
+" put this in your .vimrc
+set wildignore+=*.pyc,*.o,*.obj,*.svn,*.swp,*.class,*.hg,*.DS_Store,__pycache__
+" Nerdtree config for wildignore
+let NERDTreeRespectWildIgnore=1
 
 " NERDCommenter configs
 " Add spaces after comment delimiters by default
@@ -167,16 +155,16 @@ let g:NERDCommentEmptyLines = 1
 " Enable trimming of trailing whitespace when uncommenting
 let g:NERDTrimTrailingWhitespace = 1
 
-" Enable NERDCommenterToggle to check all selected lines is commented or not 
+" Enable NERDCommenterToggle to check all selected lines is commented or not
 let g:NERDToggleCheckAllLines = 1
 
 
 " CtrlP config
 let g:ctrlp_max_files=0
 let g:ctrlp_custom_ignore='\v[\/](.git|hg|svn|node_modules|dist)$'
-nnoremap <C-b> :CtrlPBuffer <CR>
+nnoremap <C-b> :CtrlPBuffer<cr>
 
-" Show current line 
+" Show current line
 :se cursorline
 
 " Merge clipboard
@@ -188,19 +176,23 @@ let g:ale_sign_error = '●' " Less aggressive than the default '>>'
 let g:ale_sign_warning = '.'
 let g:ale_lint_on_enter = 1 " Less distracting when opening a new file
 let g:ale_fix_on_save = 1
-let g:ale_fixers = { 'javascript': ['eslint'] }
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_echo_cursor = 1
+let g:ale_echo_msg_format = '[%linter%](%code%) : %s'
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'javascript': ['eslint'],
+\}
 
-" YouCompleteMe config
-" Start autocompletion after 4 chars
-let g:ycm_min_num_of_chars_for_completion = 1
-let g:ycm_min_num_identifier_candidate_chars = 1
-let g:ycm_enable_diagnostic_highlighting = 0
-" Don't show YCM's preview window [ I find it really annoying ]
-set completeopt-=preview
-" let g:ycm_add_preview_to_completeopt = 0
-let g:ycm_filetype_blacklist = { 'dart': 1 }
+" Do not lint or fix minified files.
+let g:ale_pattern_options = {
+\ '\.min\.js$': {'ale_linters': [], 'ale_fixers': []},
+\ '\.min\.css$': {'ale_linters': [], 'ale_fixers': []},
+\}
+let g:ale_set_highlights = 1
+let g:ale_set_loclist = 1
 
-" BufferTab 
+" BufferTab
 set hidden
 
 " LanguageTool config
@@ -233,62 +225,47 @@ nnoremap <silent> <2-LeftMouse> :let @/='\V\<'.escape(expand('<cword>'), '\').'\
 
 " VimEnhancedResolver config
 autocmd FileType javascript nmap <buffer> gf <Plug>(enhanced-resolver-go-cursor)
-autocmd FileType javascript.jsx nmap <buffer> gf <Plug>(enhanced-resolver-go-cursor)
 
 " Set swap, undo and backup directories
 set undodir=~/.vim/undo//
 set backupdir=~/.vim/backup//
 set directory=~/.vim/swap//
 
-" Enable tab menu for e command
+" Show command menu
 set wildmenu
-set wildmode=full
 
-" " Required for operations modifying multiple buffers like rename.
-" set hidden
-"
-" let g:LanguageClient_serverCommands = {
-"     \ 'javascript': ['/Users/morteza/Projects/javascript-typescript-langserver/lib/language-server.js'],
-"     \ 'javascript.jsx': ['js-langserver', '--stdio'],
-"     \ }
+" space open/closes folds
+nnoremap <space> za
 
-" nnoremap <F5> :call LanguageClient_contextMenu()<CR>
-" " Or map each action separately
-" nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
-" nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
-" nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
+" move to beginning/end of line
+nnoremap B ^
+nnoremap E $
+
+" save session
+nnoremap <leader>s :mksession<CR>
+
+" ACK config
+let g:ackprg = 'ag --nogroup --nocolor --column'
+
+" Enable system clipboard
+set clipboard=unnamedplus
+
+" Map Esc
+inoremap kj <Esc>
+cnoremap kj <C-C>
 
 " vim-lsc config
-" let g:lsc_auto_map = v:true
 " let g:lsc_server_commands = {'dart': 'dart_language_server'}
-" " Use all the defaults (recommended):
 " let g:lsc_auto_map = v:true
-"
-" " Apply the defaults with a few overrides:
-" let g:lsc_auto_map = {'defaults': v:true, 'FindReferences': '<leader>r'}
-"
-" " Setting a value to a blank string leaves that command unmapped:
-" let g:lsc_auto_map = {'defaults': v:true, 'FindImplementations': ''}
-"
-" " ... or set only the commands you want mapped without defaults.
-" " Complete default mappings are:
-" let g:lsc_auto_map = {
-"     \ 'gotodefinition': '<c-]>',
-"     \ 'gotodefinitionsplit': ['<c-w>]', '<c-w><c-]>'],
-"     \ 'findreferences': 'gr',
-"     \ 'nextreference': '<c-n>',
-"     \ 'previousreference': '<c-p>',
-"     \ 'findimplementations': 'gi',
-"     \ 'findcodeactions': 'ga',
-"     \ 'rename': 'gr',
-"     \ 'showhover': v:true,
-"     \ 'documentsymbol': 'go',
-"     \ 'workspacesymbol': 'gs',
-"     \ 'signaturehelp': 'gm',
-"     \ 'completion': 'completefunc',
-"     \}
-"
-" " Coc configs
+
+" Coc.nvim
+" if hidden is not set, TextEdit might fail.
+set hidden
+
+" Some servers have issues with backup files, see #649
+set nobackup
+set nowritebackup
+
 " Better display for messages
 set cmdheight=2
 
@@ -315,7 +292,7 @@ function! s:check_back_space() abort
 endfunction
 
 " Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-c> coc#refresh()
+inoremap <silent><expr> <c-space> coc#refresh()
 
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
@@ -377,9 +354,9 @@ xmap af <Plug>(coc-funcobj-a)
 omap if <Plug>(coc-funcobj-i)
 omap af <Plug>(coc-funcobj-a)
 
-" Use <C-d> for select selections ranges, needs server support, like: coc-tsserver, coc-python
-nmap <silent> <C-d> <Plug>(coc-range-select)
-xmap <silent> <C-d> <Plug>(coc-range-select)
+" Use <TAB> for select selections ranges, needs server support, like: coc-tsserver, coc-python
+" nmap <silent> <TAB> <Plug>(coc-range-select)
+" xmap <silent> <TAB> <Plug>(coc-range-select)
 
 " Use `:Format` to format current buffer
 command! -nargs=0 Format :call CocAction('format')
@@ -389,9 +366,6 @@ command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 
 " use `:OR` for organize import of current buffer
 command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
-
-" Add status line support, for integration with other plugin, checkout `:h coc-status`
-" set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " Using CocList
 " Show all diagnostics
@@ -410,3 +384,12 @@ nnoremap <silent> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+
+" py3 << EOF
+" import os, sys, pathlib
+" if 'VIRTUAL_ENV' in os.environ:
+"     venv = os.getenv('VIRTUAL_ENV')
+"     site_packages = next(pathlib.Path(venv, 'lib').glob('python*/site-packages'), None)
+"     if site_packages:
+"         sys.path.insert(0, str(site_packages))
+" EOF
