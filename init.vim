@@ -12,7 +12,7 @@ Plug 'shumphrey/fugitive-gitlab.vim'
 Plug 'tpope/vim-rhubarb'
 
 " Powerline plugin
-Plug 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
+" Plug 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
 
 " Vim-Airline plugin
 Plug 'vim-airline/vim-airline'
@@ -107,6 +107,10 @@ Plug 'jparise/vim-graphql'
 " Show NERD icons
 Plug 'ryanoasis/vim-devicons'
 
+" Nvim Todo comments
+Plug 'nvim-lua/plenary.nvim'
+Plug 'folke/todo-comments.nvim'
+
 call plug#end()
 
 autocmd BufEnter *.{js,jsx,ts,tsx} :syntax sync fromstart
@@ -133,7 +137,8 @@ set smarttab
 set expandtab
 
 " Powerline config
-set guifont=Inconsolata\ for\ Powerline:h15
+" set guifont=Inconsolata\ Nerd\ Font:h15
+" set guifont=DroidSansMono\ Nerd\ Font:h11
 let g:Powerline_symbols = 'fancy'
 set encoding=utf-8
 set t_Co=256
@@ -197,6 +202,7 @@ let g:NERDToggleCheckAllLines = 1
 let g:ctrlp_max_files=0
 let g:ctrlp_custom_ignore='\v[\/](.git|hg|svn|node_modules|dist)$'
 nnoremap <C-b> :CtrlPBuffer<cr>
+nnoremap <C-p> :Files<cr>
 
 " Show current line
 :se cursorline
@@ -427,3 +433,32 @@ nmap <leader>f  <Plug>(coc-format-selected)
 
 " Tests the current file
 nmap <leader>ft :!flutter test %<CR>
+
+
+" FZF and RipGrep configuration
+command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
+nmap <silent> <space>f :Rg<CR>
+nmap <silent> <space>nf :NERDTreeFind<CR>
+nmap <silent> <C-J> <C-W>w
+nmap <silent> <C-k> <C-W>l
+
+" Git shortkeys
+nmap <silent> <leader>gb :Git blame<CR>
+
+" Nvim Todo comment settings
+lua << EOF
+  require("todo-comments").setup {
+  }
+EOF
+
+
+" Vista configuration
+let g:vista_default_executive = 'coc'
+
+function! NearestMethodOrFunction() abort
+  return get(b:, 'vista_nearest_method_or_function', '')
+endfunction
+
+set statusline+=%{NearestMethodOrFunction()}
+
+autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
