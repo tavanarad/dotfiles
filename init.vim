@@ -541,11 +541,22 @@ lua << EOF
   }
 EOF
 
+lua << EOF
+function WatchVariable()
+     -- local widgets = require('dap.ui.widgets')
+     -- local my_sidebar = widgets.sidebar(widgets.scopes)
+     -- my_sidebar.open()
+      local widgets = require('dap.ui.widgets')
+      widgets.centered_float(widgets.scopes)
+  end
+EOF
+
 " DAP mapping
 nnoremap <silent> <F5> <Cmd>lua require'dap'.continue()<CR>
 nnoremap <silent> <F7> <Cmd>lua require'dap'.step_over()<CR>
 nnoremap <silent> <F8> <Cmd>lua require'dap'.step_into()<CR>
 nnoremap <silent> <F9> <Cmd>lua require'dap'.step_out()<CR>
+nnoremap <silent> <F2> <Cmd>lua WatchVariable()<CR>
 nnoremap <silent> <Leader>b <Cmd>lua require'dap'.toggle_breakpoint()<CR>
 nnoremap <silent> <Leader>B <Cmd>lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>
 nnoremap <silent> <Leader>lp <Cmd>lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>
