@@ -111,6 +111,9 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'folke/todo-comments.nvim'
 
+" DAP - Debug Adaptor
+Plug 'mfussenegger/nvim-dap'
+
 call plug#end()
 
 autocmd BufEnter *.{js,jsx,ts,tsx} :syntax sync fromstart
@@ -487,3 +490,64 @@ endfunction
 set statusline+=%{NearestMethodOrFunction()}
 
 autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
+
+
+" Load DAP
+" lua << EOF
+"   local dap = require('dap')
+"
+"   dap.adapters.dart = {
+"     type = "executable",
+"     command = "dart",
+"     -- This command was introduced upstream in https://github.com/dart-lang/sdk/commit/b68ccc9a
+"     args = {"debug_adapter"}
+"   }
+"   dap.configurations.dart = {
+"     {
+"       type = "dart",
+"       request = "launch",
+"       name = "Launch Dart Program",
+"       -- The nvim-dap plugin populates this variable with the filename of the current buffer
+"       program = "${file}",
+"       -- The nvim-dap plugin populates this variable with the editor's current working directory
+"       cwd = "${workspaceFolder}",
+"       args = {"--help"}, -- Note for Dart apps this is args, for Flutter apps toolArgs
+"     }
+"   }
+" EOF
+
+lua << EOF
+  local dap = require('dap')
+
+  dap.adapters.dart = {
+    type = "executable",
+    -- As of this writing, this functionality is open for review in https://github.com/flutter/flutter/pull/91802
+    -- command = "flutter",
+    command = "/Users/morteza/fvm/versions/3.3.3/bin/flutter",
+    args = {"debug_adapter"}
+  }
+  dap.configurations.dart = {
+    {
+      type = "dart",
+      request = "launch",
+      name = "Launch Flutter Program",
+      -- The nvim-dap plugin populates this variable with the filename of the current buffer
+      program = "${file}",
+      -- The nvim-dap plugin populates this variable with the editor's current working directory
+      cwd = "${workspaceFolder}",
+      -- This gets forwarded to the Flutter CLI tool, substitute `linux` for whatever device you wish to launch
+      -- toolArgs = {"-d", "linux"}
+    }
+  }
+EOF
+
+" DAP mapping
+nnoremap <silent> <F5> <Cmd>lua require'dap'.continue()<CR>
+nnoremap <silent> <F7> <Cmd>lua require'dap'.step_over()<CR>
+nnoremap <silent> <F8> <Cmd>lua require'dap'.step_into()<CR>
+nnoremap <silent> <F9> <Cmd>lua require'dap'.step_out()<CR>
+nnoremap <silent> <Leader>b <Cmd>lua require'dap'.toggle_breakpoint()<CR>
+nnoremap <silent> <Leader>B <Cmd>lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>
+nnoremap <silent> <Leader>lp <Cmd>lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>
+nnoremap <silent> <Leader>dr <Cmd>lua require'dap'.repl.open()<CR>
+nnoremap <silent> <Leader>dl <Cmd>lua require'dap'.run_last()<CR>
