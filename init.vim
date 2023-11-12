@@ -435,7 +435,7 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
 "Vista
-
+nnoremap <silent> <space>v :Vista!!<CR>
 function! NearestMethodOrFunction() abort
   return get(b:, 'vista_nearest_method_or_function', '')
 endfunction
@@ -460,7 +460,18 @@ nmap <leader>f  <Plug>(coc-format-selected)
 " MY Custome shortcut in Flutter
 
 " Tests the current file
-nmap <leader>ft :!flutter test %<CR>
+nmap <leader>ft :term fvm flutter test %<CR>
+
+
+" FZF and RipGrep configuration
+command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
+nmap <silent> <space>f :Rg<CR>
+nmap <silent> <space>nf :NERDTreeFind<CR>
+nmap <silent> <C-J> <C-W>w
+nmap <silent> <C-k> <C-W>l
+
+" Git shortkeys
+nmap <silent> <leader>gb :Git blame<CR>
 
 
 " FZF and RipGrep configuration
