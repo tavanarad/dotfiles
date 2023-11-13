@@ -1,6 +1,9 @@
 {
+  "coc.preferences.formatOnType":true,
 "coc.preferences.formatOnSaveFiletypes": [
-  "dart"
+  "dart",
+  "js",
+  "ts"
 ],
 "dart.showTodos": true,
 "cSpell.enabled": true,
@@ -63,8 +66,34 @@
   "Dimens",
   "Optile",
   "Paypal",
+  "Tealium",
+  "commercetools",
   "contentful",
+  "cuid",
+  "deeplink",
+  "draggable",
   "flaconi",
-  "usercentrics"
-]
+  "giftcard",
+  "morteza",
+  "newrelic",
+  "pageview",
+  "recase",
+  "rxdart",
+  "skus",
+  "storyly",
+  "undisrupted",
+  "usercentrics",
+  "webshop"
+],
+"inlayHint.enable": false,
+"coc.preferences.extensionUpdateCheck": "daily",
+"dart.analysisExcludedFolders": [
+  "/Users/morteza.tavanarad/.pub-cache/",
+  "/Users/morteza.tavanarad/fvm/"
+],
+"typescript.preferences.quoteStyle": "single",
+"eslint.packageManager": "yarn",
+"eslint.alwaysShowStatus": true,
+"eslint.autoFixOnSave": true,
+"eslint.format.enable": true
 }

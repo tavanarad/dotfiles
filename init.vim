@@ -1,4 +1,4 @@
-set nocompatible              " be iMproved, required
+
 filetype off                  " required
 
 """ Vim-Plug
@@ -114,6 +114,23 @@ Plug 'folke/todo-comments.nvim'
 " DAP - Debug Adaptor
 Plug 'mfussenegger/nvim-dap'
 
+" NeoTest
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'antoinemadec/FixCursorHold.nvim'
+Plug 'nvim-neotest/neotest'
+Plug 'sidlatau/neotest-dart'
+Plug 'natebosch/vim-lsc'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.4' }
+Plug 'nvim-telescope/telescope-live-grep-args.nvim'
+
+" Terraform
+Plug 'hashivim/vim-hashicorp-tools'
+Plug 'jvirtanen/vim-hcl'
+
+" nvim-web-devicons
+Plug 'nvim-tree/nvim-web-devicons'
+
 call plug#end()
 
 autocmd BufEnter *.{js,jsx,ts,tsx} :syntax sync fromstart
@@ -200,12 +217,90 @@ let g:NERDTrimTrailingWhitespace = 1
 " Enable NERDCommenterToggle to check all selected lines is commented or not
 let g:NERDToggleCheckAllLines = 1
 
+" Nvim web devicons configs
+lua << EOF
+require'nvim-web-devicons'.setup {
+ -- your personnal icons can go here (to override)
+ -- you can specify color or cterm_color instead of specifying both of them
+ -- DevIcon will be appended to `name`
+ override = {
+  zsh = {
+    icon = "",
+    color = "#428850",
+    cterm_color = "65",
+    name = "Zsh"
+  }
+ };
+ -- globally enable different highlight colors per icon (default to true)
+ -- if set to false all icons will have the default icon's color
+ color_icons = true;
+ -- globally enable default icons (default to false)
+ -- will get overriden by `get_icons` option
+ default = true;
+ -- globally enable "strict" selection of icons - icon will be looked up in
+ -- different tables, first by filename, and if not found by extension; this
+ -- prevents cases when file doesn't have any extension but still gets some icon
+ -- because its name happened to match some extension (default to false)
+ strict = true;
+ -- same as `override` but specifically for overrides by filename
+ -- takes effect when `strict` is true
+ override_by_filename = {
+  [".gitignore"] = {
+    icon = "",
+    color = "#f1502f",
+    name = "Gitignore"
+  }
+ };
+ -- same as `override` but specifically for overrides by extension
+ -- takes effect when `strict` is true
+ override_by_extension = {
+  ["log"] = {
+    icon = "",
+    color = "#81e043",
+    name = "Log"
+  }
+ };
+}
+EOF
+
+
+" Telescope configs
+lua << EOF
+  require('telescope').setup{
+    defaults = {
+      layout_strategy = 'vertical',
+      layout = {
+        height = { min = 4, max = 25 }, -- min and max height of the columns
+        width = { min = 20, max = 50 }, -- min and max width of the columns
+        spacing = 3, -- spacing between columns
+        align = "left", -- align columns left, center or right
+      },
+      color_devicons = true,
+      path_display = {
+        -- "smart",
+      },
+    },
+    pickers = {
+      find_files = {
+        path_display = {
+          turncate = 3,
+        },
+      },
+      buffers = {
+        -- theme = "dropdown",
+      }
+    },
+  }
+EOF
 
 " CtrlP config
 let g:ctrlp_max_files=0
 let g:ctrlp_custom_ignore='\v[\/](.git|hg|svn|node_modules|dist)$'
-nnoremap <C-b> :CtrlPBuffer<cr>
-nnoremap <C-p> :Files<cr>
+" nnoremap <C-b> :CtrlPBuffer<cr>
+" nnoremap <C-b> :Telescope buffers<cr>
+nnoremap <C-b> :lua require('telescope.builtin').buffers({ sort_mru = true, ignore_current_buffer = true }) <cr>
+" nnoremap <C-p> :Files<cr>
+nnoremap <C-p> :Telescope find_files<cr>
 
 " Show current line
 :se cursorline
@@ -224,10 +319,10 @@ let g:ale_echo_cursor = 1
 let g:ale_echo_msg_format = '[%linter%](%code%) : %s'
 let g:ale_fixers = {
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
-\   'javascript': ['eslint'],
 \}
+let g:ale_fixers.javascript = ['eslint']
 
-" Do not lint or fix minified files.
+"   Do not lint or fix minified files.
 let g:ale_pattern_options = {
 \ '\.min\.js$': {'ale_linters': [], 'ale_fixers': []},
 \ '\.min\.css$': {'ale_linters': [], 'ale_fixers': []},
@@ -341,7 +436,7 @@ else
 endif
 
 " Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
+" inoremap <silent><expr> <c-space> coc#refresh()
 
 " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
@@ -383,7 +478,7 @@ nmap <leader>f  <Plug>(coc-format-selected)
 augroup mygroup
   autocmd!
   " Setup formatexpr specified filetype(s).
-  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  autocmd FileType typescript,json,dart setl formatexpr=CocAction('formatSelected')
   " Update signature help on jump placeholder
   autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 augroup end
@@ -460,26 +555,30 @@ nmap <leader>f  <Plug>(coc-format-selected)
 " MY Custome shortcut in Flutter
 
 " Tests the current file
-nmap <leader>ft :term fvm flutter test %<CR>
+nmap <leader>fT :term fvm flutter test %<CR>
+nmap <leader>ft :exe "term fvm flutter test % --name " . substitute(getline('.'), ",", "", "")<CR>
 
 
 " FZF and RipGrep configuration
 command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
-nmap <silent> <space>f :Rg<CR>
+" nmap <silent> <space>f :Rg<CR>
+nmap <silent> <space>f :Telescope live_grep<CR>
+" nmap <silent> <space>f :lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>
 nmap <silent> <space>nf :NERDTreeFind<CR>
 nmap <silent> <C-J> <C-W>w
 nmap <silent> <C-k> <C-W>l
 
 " Git shortkeys
 nmap <silent> <leader>gb :Git blame<CR>
+nmap <silent> <leader>gB :GBrowse<CR>
 
 
 " FZF and RipGrep configuration
-command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
-nmap <silent> <space>f :Rg<CR>
-nmap <silent> <space>nf :NERDTreeFind<CR>
-nmap <silent> <C-J> <C-W>w
-nmap <silent> <C-k> <C-W>l
+" command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
+" nmap <silent> <space>f :Rg<CR>
+" nmap <silent> <space>nf :NERDTreeFind<CR>
+" nmap <silent> <C-J> <C-W>w
+" nmap <silent> <C-k> <C-W>l
 
 " Git shortkeys
 nmap <silent> <leader>gb :Git blame<CR>
@@ -534,32 +633,88 @@ lua << EOF
     type = "executable",
     -- As of this writing, this functionality is open for review in https://github.com/flutter/flutter/pull/91802
     -- command = "flutter",
-    command = "/Users/morteza/fvm/versions/3.3.3/bin/flutter",
+    command = "/Users/morteza.tavanarad/fvm/versions/stable/bin/flutter",
     args = {"debug_adapter"}
   }
+
   dap.configurations.dart = {
     {
       type = "dart",
       request = "launch",
-      name = "Launch Flutter Program",
-      -- The nvim-dap plugin populates this variable with the filename of the current buffer
-      program = "${file}",
-      -- The nvim-dap plugin populates this variable with the editor's current working directory
+      name = "Flutter - Development",
+      -- the nvim-dap plugin populates this variable with the filename of the current buffer
+      -- program = "${file}",
+      program = "lib/src/main_stage.dart",
+      -- the nvim-dap plugin populates this variable with the editor's current working directory
       cwd = "${workspaceFolder}",
-      -- This gets forwarded to the Flutter CLI tool, substitute `linux` for whatever device you wish to launch
-      -- toolArgs = {"-d", "linux"}
+      -- this gets forwarded to the flutter cli tool, substitute `linux` for whatever device you wish to launch
+      toolArgs = {"--flavor", "development"}
+    },
+    {
+      type = "dart",
+      request = "launch",
+      name = "Flutter - Development",
+      -- the nvim-dap plugin populates this variable with the filename of the current buffer
+      program = "${file}",
+      -- the nvim-dap plugin populates this variable with the editor's current working directory
+      cwd = "${workspaceFolder}",
+      -- this gets forwarded to the flutter cli tool, substitute `linux` for whatever device you wish to launch
+      toolArgs = {"--flavor", "development"}
+    },
+    {
+      type = "dart",
+      request = "launch",
+      name = "Flutter - Staging",
+      -- the nvim-dap plugin populates this variable with the filename of the current buffer
+      program = "${file}",
+      -- the nvim-dap plugin populates this variable with the editor's current working directory
+      cwd = "${workspaceFolder}",
+      -- this gets forwarded to the flutter cli tool, substitute `linux` for whatever device you wish to launch
+      toolArgs = {"--flavor", "staging", "--dart-define=disableAppUpdate=true"}
+    },
+    {
+        type = "dart",
+        request = "launch",
+        name = "Flutter - Production",
+        -- the nvim-dap plugin populates this variable with the filename of the current buffer
+        program = "${file}",
+        -- the nvim-dap plugin populates this variable with the editor's current working directory
+        cwd = "${workspaceFolder}",
+        -- this gets forwarded to the flutter cli tool, substitute `linux` for whatever device you wish to launch
+        toolArgs = {"--flavor", "production", "--dart-define=disableAppUpdate=true"}
     }
   }
+
+  require("neotest").setup({
+    adapters = {
+      require("neotest-dart")({
+        command = "/Users/morteza.tavanarad/fvm/versions/stable/bin/flutter",
+        use_lsp = true
+      }),
+    },
+  })
+
 EOF
 
 lua << EOF
-function WatchVariable()
+function popupScope()
      -- local widgets = require('dap.ui.widgets')
      -- local my_sidebar = widgets.sidebar(widgets.scopes)
      -- my_sidebar.open()
       local widgets = require('dap.ui.widgets')
       widgets.centered_float(widgets.scopes)
   end
+
+  function dockScope()
+    local widgets = require('dap.ui.widgets')
+    local my_sidebar = widgets.sidebar(widgets.scopes)
+    my_sidebar.open()
+  end
+
+  function hoverScope()
+    require('dap.ui.widgets').hover()
+  end
+
 EOF
 
 " DAP mapping
@@ -567,9 +722,13 @@ nnoremap <silent> <F5> <Cmd>lua require'dap'.continue()<CR>
 nnoremap <silent> <F7> <Cmd>lua require'dap'.step_over()<CR>
 nnoremap <silent> <F8> <Cmd>lua require'dap'.step_into()<CR>
 nnoremap <silent> <F9> <Cmd>lua require'dap'.step_out()<CR>
-nnoremap <silent> <F2> <Cmd>lua WatchVariable()<CR>
+nnoremap <silent> <F2> <Cmd>lua popupScope()<CR>
+nnoremap <silent> <Leader>dw <Cmd>lua hoverScope()<CR>
 nnoremap <silent> <Leader>b <Cmd>lua require'dap'.toggle_breakpoint()<CR>
 nnoremap <silent> <Leader>B <Cmd>lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>
 nnoremap <silent> <Leader>lp <Cmd>lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>
 nnoremap <silent> <Leader>dr <Cmd>lua require'dap'.repl.open()<CR>
 nnoremap <silent> <Leader>dl <Cmd>lua require'dap'.run_last()<CR>
+
+
+let g:lsc_server_commands = {'dart': 'dart_language_server'}
