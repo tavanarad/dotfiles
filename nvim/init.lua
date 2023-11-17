@@ -72,7 +72,7 @@ require('lazy').setup({
   },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim', opts = {} },
+  { 'folke/which-key.nvim',  opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -119,23 +119,25 @@ require('lazy').setup({
         end
 
         -- Actions
-        map('n', '<leader>hs', gs.stage_hunk, {desc = 'Stage hunk'})
-        map('n', '<leader>hr', gs.reset_hunk, {desc = 'Reset hunk'})
-        map('v', '<leader>hs', function() gs.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end, {desc = 'Stage hunk'})
-        map('v', '<leader>hr', function() gs.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end, {desc = 'Reset hunk'})
-        map('n', '<leader>hS', gs.stage_buffer, {desc = 'Stage buffer'})
-        map('n', '<leader>hu', gs.undo_stage_hunk, {desc = 'Undo stage hunk'})
-        map('n', '<leader>hR', gs.reset_buffer, {desc = 'Reset buffer'})
-        map('n', '<leader>hp', gs.preview_hunk, {desc = 'Preview hunk'})
-        map('n', '<leader>hb', function() gs.blame_line{full=true} end, {desc = 'Blame line'})
-        map('n', '<leader>htb', gs.toggle_current_line_blame, {desc = 'Toggle current line blame'})
-        map('n', '<leader>hd', gs.diffthis, {desc = 'Diff this'})
-        map('n', '<leader>hD', function() gs.diffthis('~') end, {desc = 'Diff to HEAD'})
-        map('n', '<leader>htd', gs.toggle_deleted, {desc = 'Toggle deleted'})
-        map('n', '<leader>htd', gs.toggle_deleted, {desc = 'Toggle deleted'})
+        map('n', '<leader>hs', gs.stage_hunk, { desc = 'Stage hunk' })
+        map('n', '<leader>hr', gs.reset_hunk, { desc = 'Reset hunk' })
+        map('v', '<leader>hs', function() gs.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end,
+          { desc = 'Stage hunk' })
+        map('v', '<leader>hr', function() gs.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end,
+          { desc = 'Reset hunk' })
+        map('n', '<leader>hS', gs.stage_buffer, { desc = 'Stage buffer' })
+        map('n', '<leader>hu', gs.undo_stage_hunk, { desc = 'Undo stage hunk' })
+        map('n', '<leader>hR', gs.reset_buffer, { desc = 'Reset buffer' })
+        map('n', '<leader>hp', gs.preview_hunk, { desc = 'Preview hunk' })
+        map('n', '<leader>hb', function() gs.blame_line { full = true } end, { desc = 'Blame line' })
+        map('n', '<leader>htb', gs.toggle_current_line_blame, { desc = 'Toggle current line blame' })
+        map('n', '<leader>hd', gs.diffthis, { desc = 'Diff this' })
+        map('n', '<leader>hD', function() gs.diffthis('~') end, { desc = 'Diff to HEAD' })
+        map('n', '<leader>htd', gs.toggle_deleted, { desc = 'Toggle deleted' })
+        map('n', '<leader>htd', gs.toggle_deleted, { desc = 'Toggle deleted' })
 
         -- Text object
-        map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>', {desc = ''})
+        map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>', { desc = '' })
       end,
     },
   },
@@ -150,8 +152,8 @@ require('lazy').setup({
           style = 'warm',
           cmp_itemkind_reverse = true,
           -- toggle theme style ---
-          toggle_style_key = '<leader>od', -- keybind to toggle theme style. Leave it nil to disable it, or set it to a string, for example "<leader>ts"
-          toggle_style_list = {'dark', 'darker', 'cool', 'deep', 'warm', 'warmer', 'light'}, -- List of styles to toggle between
+          toggle_style_key = '<leader>od',                                                     -- keybind to toggle theme style. Leave it nil to disable it, or set it to a string, for example "<leader>ts"
+          toggle_style_list = { 'dark', 'darker', 'cool', 'deep', 'warm', 'warmer', 'light' }, -- List of styles to toggle between
         }
       );
 
@@ -353,7 +355,7 @@ local function live_grep_git_root()
   local git_root = find_git_root()
   if git_root then
     require('telescope.builtin').live_grep({
-      search_dirs = {git_root},
+      search_dirs = { git_root },
     })
   end
 end
@@ -362,7 +364,8 @@ vim.api.nvim_create_user_command('LiveGrepGitRoot', live_grep_git_root, {})
 
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader>sb', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+vim.keymap.set('n', '<leader>sb', require('telescope.builtin').buffers, { desc = 'Find existing [b]uffers' })
+vim.keymap.set('n', '<C-b>', require('telescope.builtin').buffers, { desc = 'Find existing buffers' })
 vim.keymap.set('n', '<leader>/', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
@@ -522,11 +525,11 @@ require('mason-lspconfig').setup()
 local servers = {
   -- clangd = {},
   -- gopls = {},
-  -- pyright = {},
   -- rust_analyzer = {},
   -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
 
+  pyright = {},
   lua_ls = {
     Lua = {
       workspace = { checkThirdParty = false },
@@ -640,32 +643,81 @@ vim.api.nvim_set_keymap('i', 'kj', '<ESC>', {})
 vim.api.nvim_set_keymap('n', '<leader>f', '<CMD>Telescope flutter commands<CR>', {})
 
 -- DAP mapping
-vim.keymap.set('n', '<F5>', function() require('dap').continue() end, {silent=true})
-vim.keymap.set('n', '<F7>', function() require'dap'.step_over() end , {silent=true})
-vim.keymap.set('n', '<F8>', function() require'dap'.step_into() end , {silent=true})
-vim.keymap.set('n', '<F9>', function() require'dap'.step_out()end, {silent=true})
-vim.keymap.set('n', '<F2>', function() WatchVariable() end, {silent=true})
-vim.keymap.set('n', '<Leader>b', function() require'dap'.toggle_breakpoint() end, {silent=true})
+vim.keymap.set('n', '<F5>', function() require('dap').continue() end, { silent = true })
+vim.keymap.set('n', '<F7>', function() require 'dap'.step_over() end, { silent = true })
+vim.keymap.set('n', '<F8>', function() require 'dap'.step_into() end, { silent = true })
+vim.keymap.set('n', '<F9>', function() require 'dap'.step_out() end, { silent = true })
+vim.keymap.set('n', '<F2>', function() WatchVariable() end, { silent = true })
+vim.keymap.set('n', '<Leader>b', function() require 'dap'.toggle_breakpoint() end, { silent = true })
 vim.keymap.set('n', '<Leader>B', function()
   require('dap').set_breakpoint(
     vim.fn.input('Breakpoint condition: ')
   )
-end, {silent=true})
+end, { silent = true })
 vim.keymap.set('n', '<Leader>lp', function()
-  require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))
-end, {silent=true})
-vim.keymap.set('n', '<Leader>dr', function() require'dap'.repl.open()end, {silent=true, desc='[D]ebug [R]epl'})
-vim.keymap.set('n', '<Leader>dw', function() require('dap.ui.widgets').hover()end, {silent=true, desc='[D]ebug [W]atch'})
-vim.keymap.set('n', '<Leader>dl', function() require'dap'.run_last()end, {silent=true, desc='[D]ebug run [L]ast'})
+  require 'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))
+end, { silent = true })
+vim.keymap.set('n', '<Leader>dr', function() require 'dap'.repl.open() end, { silent = true, desc = '[D]ebug [R]epl' })
+vim.keymap.set('n', '<Leader>dw', function() require('dap.ui.widgets').hover() end, {
+  silent = true,
+  desc =
+  '[D]ebug [W]atch'
+})
+vim.keymap.set('n', '<Leader>dl', function() require 'dap'.run_last() end, { silent = true, desc = '[D]ebug run [L]ast' })
 
 
--- Flutter Tool 
+-- Flutter Tool
 require("flutter-tools").setup {
   fvm = true,
   debugger = {
     enabled = true,
     register_configurations = function(_)
       require("dap").configurations.dart = {
+        {
+          type = "dart",
+          request = "launch",
+          name = "Flutter - Development",
+          -- the nvim-dap plugin populates this variable with the filename of the current buffer
+          -- program = "${file}",
+          program = "lib/src/main_stage.dart",
+          -- the nvim-dap plugin populates this variable with the editor's current working directory
+          cwd = "${workspaceFolder}",
+          -- this gets forwarded to the flutter cli tool, substitute `linux` for whatever device you wish to launch
+          toolArgs = { "--flavor", "development" }
+        },
+        {
+          type = "dart",
+          request = "launch",
+          name = "Flutter - Development",
+          -- the nvim-dap plugin populates this variable with the filename of the current buffer
+          program = "${file}",
+          -- the nvim-dap plugin populates this variable with the editor's current working directory
+          cwd = "${workspaceFolder}",
+          -- this gets forwarded to the flutter cli tool, substitute `linux` for whatever device you wish to launch
+          toolArgs = { "--flavor", "development" }
+        },
+        {
+          type = "dart",
+          request = "launch",
+          name = "Flutter - Staging",
+          -- the nvim-dap plugin populates this variable with the filename of the current buffer
+          program = "${file}",
+          -- the nvim-dap plugin populates this variable with the editor's current working directory
+          cwd = "${workspaceFolder}",
+          -- this gets forwarded to the flutter cli tool, substitute `linux` for whatever device you wish to launch
+          toolArgs = { "--flavor", "staging", "--dart-define=disableAppUpdate=true" }
+        },
+        {
+          type = "dart",
+          request = "launch",
+          name = "Flutter - Production",
+          -- the nvim-dap plugin populates this variable with the filename of the current buffer
+          program = "${file}",
+          -- the nvim-dap plugin populates this variable with the editor's current working directory
+          cwd = "${workspaceFolder}",
+          -- this gets forwarded to the flutter cli tool, substitute `linux` for whatever device you wish to launch
+          toolArgs = { "--flavor", "production", "--dart-define=disableAppUpdate=true" }
+        },
         {
           type = "dart",
           request = "launch",
