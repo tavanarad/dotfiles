@@ -3,14 +3,14 @@ local map = function(keys, func, desc)
     desc = 'Buffer: ' .. desc
   end
 
-  vim.keymap.set('n', keys, func, {  noremap = true, silent = true, desc = desc })
+  vim.keymap.set('n', keys, func, { noremap = true, silent = true, desc = desc })
 end
 
 local opts = { noremap = true, silent = true }
 
 -- Move to previous/next
-map('<M-,>', '<Cmd>BufferPrevious<CR>', 'Previous')
-map('<M-.>', '<Cmd>BufferNext<CR>', 'Next')
+map('<tab>', '<Cmd>BufferPrevious<CR>', 'Previous')
+map('<S-Tab>', '<Cmd>BufferNext<CR>', 'Next')
 -- Re-order to previous/next
 map('<M-<>', '<Cmd>BufferMovePrevious<CR>', 'Move previous')
 map('<M->>', '<Cmd>BufferMoveNext<CR>', 'Move next')
@@ -53,7 +53,7 @@ return {
   {
     'romgrk/barbar.nvim',
     dependencies = {
-      'lewis6991/gitsigns.nvim', -- OPTIONAL: for git status
+      'lewis6991/gitsigns.nvim',     -- OPTIONAL: for git status
       'nvim-tree/nvim-web-devicons', -- OPTIONAL: for file icons
     },
     init = function() vim.g.barbar_auto_setup = true end,

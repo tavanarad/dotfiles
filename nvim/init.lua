@@ -138,6 +138,8 @@ require('lazy').setup({
 
         -- Text object
         map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>', { desc = '' })
+
+        vim.cmd("hi GitSignsCurrentLineBlame guifg=#640228")
       end,
     },
   },
@@ -530,10 +532,24 @@ local servers = {
   -- clangd = {},
   -- gopls = {},
   -- rust_analyzer = {},
-  -- tsserver = {},
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
 
+  tsserver = {},
   pyright = {},
+  pylsp = {
+    settings = {
+      pylsp = {
+        plugins = {
+          autopep8 = { enabled = true },
+          yapf = { enabled = false },
+          -- linter options
+          pylint = { enabled = true, executable = "pylint" },
+          pyflakes = { enabled = false },
+          pycodestyle = { enabled = false },
+        },
+      },
+    },
+  },
   lua_ls = {
     Lua = {
       workspace = { checkThirdParty = false },
